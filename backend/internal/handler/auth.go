@@ -163,19 +163,16 @@ func (h *AuthHandler) Me(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": toPublic(&u)})
 }
 
-func (h *AuthHandler) audit(c *gin.Context, uid *interface{ String() string }, action, target string) {
+func (h *AuthHandler) audit(c *gin.Context, uid *uuid.UUID, action, target string) {
+	ip := c.ClientIP()
+	ua := c.Request.UserAgent()
 	go func() {
-		var u *gormUUID
-		if uid != nil {
-			s := (*uid).String()
-			u = parseUUID(s)
-		}
 		_ = h.DB.Create(&model.AuditLog{
-			UserID:    (*gormUUIDPtr)(u),
+			UserID:    uid,
 			Action:    action,
 			Target:    target,
-			IP:        c.ClientIP(),
-			UserAgent: c.Request.UserAgent(),
+			IP:        ip,
+			UserAgent: ua,
 		}).Error
 	}()
 }
