@@ -23,7 +23,7 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { to: "/", label: "总览", icon: LayoutDashboard, exact: true },
+  { to: "/dashboard", label: "总览", icon: LayoutDashboard },
   { to: "/tasks", label: "抢购任务", icon: ShoppingCart },
   { to: "/catalog", label: "服务器型号", icon: Server },
   { to: "/orders", label: "订单记录", icon: ListOrdered },
@@ -58,9 +58,7 @@ export function AppShell() {
         </div>
         <nav className="flex-1 space-y-0.5 p-3">
           {NAV.map((item) => {
-            const active = item.exact
-              ? location.pathname === item.to
-              : location.pathname.startsWith(item.to);
+            const active = location.pathname.startsWith(item.to);
             const Icon = item.icon;
             return (
               <Link
