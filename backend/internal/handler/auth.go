@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
@@ -101,7 +102,8 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	tok, _ := auth.Issue(h.Cfg.JWTSecret, u.ID, u.Role, "access", h.Cfg.JWTAccessTTL)
-	h.audit(c, &u.ID, "user.register", u.Username)
+	uid := u.ID
+	h.audit(c, &uid, "user.register", u.Username)
 	c.JSON(http.StatusOK, tokenResp{AccessToken: tok, User: toPublic(u)})
 }
 
@@ -127,7 +129,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 	if !auth.VerifyPassword(u.PasswordHash, req.Password) {
-		h.audit(c, &u.ID, "user.login_failed", u.Username)
+		uid := u.ID
+		h.audit(c, &uid, "user.login_failed", u.Username)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "用户名或密码错误"})
 		return
 	}
@@ -137,7 +140,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	h.DB.Model(&u).Update("last_login_at", now)
 
 	tok, _ := auth.Issue(h.Cfg.JWTSecret, u.ID, u.Role, "access", h.Cfg.JWTAccessTTL)
-	h.audit(c, &u.ID, "user.login", u.Username)
+	uid := u.ID
+	h.audit(c, &uid, "user.login", u.Username)
 	c.JSON(http.StatusOK, tokenResp{AccessToken: tok, User: toPublic(&u)})
 }
 
