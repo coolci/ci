@@ -15,7 +15,14 @@ import {
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+interface NavItem {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+}
+
+const NAV: NavItem[] = [
   { to: "/", label: "总览", icon: LayoutDashboard, exact: true },
   { to: "/tasks", label: "抢购任务", icon: ShoppingCart },
   { to: "/catalog", label: "服务器型号", icon: Server },
@@ -24,7 +31,7 @@ const NAV = [
   { to: "/accounts", label: "OVH 账号", icon: Users },
   { to: "/notifications", label: "通知设置", icon: Bell },
   { to: "/settings", label: "系统设置", icon: Settings },
-] as const;
+];
 
 export function AppShell() {
   const location = useLocation();
